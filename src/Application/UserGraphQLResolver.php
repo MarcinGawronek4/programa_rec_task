@@ -2,14 +2,13 @@
 
 namespace App\Application;
 
-use App\Application\UserService;
 use Overblog\GraphQLBundle\Annotation as GraphQL;
-use Overblog\GraphQLBundle\Definition\Resolver\QueryInterface;
+use Overblog\GraphQLBundle\Definition\Resolver\MutationInterface;
 
 /**
  * @GraphQL\Provider
  */
-class UserGraphQLResolver implements QueryInterface
+class UserGraphQLResolver implements MutationInterface
 {
     private UserService $userService;
 
@@ -19,13 +18,10 @@ class UserGraphQLResolver implements QueryInterface
     }
 
     /**
-     * @GraphQL\Query(
-     *     name="users",
-     *     type="[User]"
-     * )
+     * @GraphQL\Mutation(name="saveUsers", type="[User]")
      */
-    public function resolveUsers(): array
+    public function saveUsers(): array
     {
-        return $this->userService->getUsers();
+        return $this->userService->saveUsers();
     }
 }
