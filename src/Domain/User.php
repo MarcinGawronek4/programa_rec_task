@@ -4,6 +4,9 @@ namespace App\Domain;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use App\Domain\Task;
 
 /**
  * @ORM\Entity(repositoryClass="App\Infrastructure\User\UserRepository")
@@ -38,11 +41,19 @@ class User implements UserInterface
      */
     private string $password;
 
-    public function __construct(string $name, string $email, string $username)
+    /**
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="assignedUser")
+     */
+    private Collection $tasks;
+    
+
+    public function __construct(string $name, string $email, string $username, string $password)
     {
         $this->name = $name;
         $this->email = $email;
         $this->username = $username;
+        $this->password = $password;
+        $this->tasks = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
@@ -60,4 +71,9 @@ class User implements UserInterface
     public function getSalt() {}
     public function eraseCredentials(): void {}
     public function getUserIdentifier(): string { return $this->id; }
+
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
 }
