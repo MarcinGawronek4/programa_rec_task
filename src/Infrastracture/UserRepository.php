@@ -6,8 +6,9 @@ use App\Domain\User;
 use App\Domain\UserRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
     private HttpClientInterface $httpClient;
     private EntityManagerInterface $entityManager;
@@ -26,7 +27,8 @@ class UserRepository implements UserRepositoryInterface
         return array_map(fn($user) => new User(
             $user['name'], 
             $user['email'], 
-            $user['username']
+            $user['username'],
+            'hashed_password_placeholder'
         ), $data);
     }
 
@@ -42,5 +44,10 @@ class UserRepository implements UserRepositoryInterface
             $this->entityManager->persist($user);
         }
         $this->entityManager->flush();
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        return $this->findOneBy(['email' => $email]);
     }
 }
