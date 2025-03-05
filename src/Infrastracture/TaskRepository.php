@@ -1,23 +1,25 @@
 <?php
 
-namespace App\Infrastructure\Task;
+namespace App\Infrastructure;
 
 use App\Domain\Task;
 use App\Domain\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TaskRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        parent::__construct($registry, Task::class);
+        $this->entityManager = $entityManager;
     }
 
     public function save(Task $task): void
     {
-        $this->_em->persist($task);
-        $this->_em->flush();
+        $this->entityManager->persist($task);
+        $this->entityManager->flush();
     }
 
     public function findByUser(User $user): array

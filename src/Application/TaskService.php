@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\Task;
+namespace App\Application;
 
 use App\Domain\Task;
 use App\Domain\User;
-use App\Infrastructure\Task\TaskRepository;
+use App\Infrastructure\TaskRepository;
 
 class TaskService
 {
