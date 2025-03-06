@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure;
 
-use App\Domain\Task;
-use App\Domain\User;
+use App\Domain\Task\Task;
+use App\Domain\User\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 

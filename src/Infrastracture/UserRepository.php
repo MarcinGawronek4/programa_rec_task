@@ -2,21 +2,23 @@
 
 namespace App\Infrastructure;
 
-use App\Domain\User;
+use App\Domain\User\User;
 use App\Domain\UserRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
+class UserRepository implements UserRepositoryInterface
 {
     private HttpClientInterface $httpClient;
     private EntityManagerInterface $entityManager;
+    private EntityRepository $repository;
 
-    public function __construct(HttpClientInterface $httpClient, EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
         $this->entityManager = $entityManager;
+        $this->repository = $entityManager->getRepository(User::class);
     }
 
     public function fetchAll(): array
@@ -28,7 +30,7 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             $user['name'], 
             $user['email'], 
             $user['username'],
-            'hashed_password_placeholder'
+            'test'
         ), $data);
     }
 
@@ -48,6 +50,6 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
 
     public function findByEmail(string $email): ?User
     {
-        return $this->findOneBy(['email' => $email]);
+        return $this->repository->findOneBy(['email' => $email]);
     }
 }

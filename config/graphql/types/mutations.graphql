@@ -1,3 +1,0 @@
-type RootMutation {
-    saveUsers: [User]
-}

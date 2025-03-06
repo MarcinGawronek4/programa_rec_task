@@ -1,49 +1,36 @@
 <?php
 
-namespace App\Domain;
+namespace App\Domain\User;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Domain\Task;
+use App\Infrastructure\UserRepository;
+use App\Domain\Task\Task;
 
-/**
- * @ORM\Entity(repositoryClass="App\Infrastructure\User\UserRepository")
- * @ORM\Table(name="users")
- */
+#[ORM\Entity]
+#[ORM\Table(name: "users")]
 class User implements UserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private string $name;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     private string $email;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255, unique: true)]
     private string $username;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: "string")]
     private string $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="assignedUser")
-     */
+    #[ORM\OneToMany(mappedBy: "assignedUser", targetEntity: Task::class, cascade: ["remove"])]
     private Collection $tasks;
     
 

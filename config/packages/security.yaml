@@ -7,12 +7,13 @@ security:
         users_in_memory: { memory: null }
         app_user_provider:
             entity:
-                class: App\Domain\User
+                class: App\Domain\User\User
                 property: email
     firewalls:
         login:
             pattern: ^/login
-            security: false
+            stateless: false
+            provider: app_user_provider
             form_login:
                 login_path: login
                 check_path: login
@@ -23,7 +24,7 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_user_provider
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

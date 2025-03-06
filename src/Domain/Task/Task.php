@@ -1,42 +1,31 @@
 <?php
 
-namespace App\Domain;
+namespace App\Domain\Task;
 
-use App\Domain\User;
+use App\Domain\User\User;
 use Doctrine\ORM\Mapping as ORM;
+use App\Infrastructure\TaskRepository;
 
-/**
- * @ORM\Entity(repositoryClass="App\Infrastructure\Task\TaskRepository")
- * @ORM\Table(name="tasks")
- */
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ORM\Table(name: "tasks")]
 class Task
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
     private int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: "string", length: 255)]
     private string $name;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: "text")]
     private string $description;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     */
+    #[ORM\Column(type: "string", length: 50)]
     private string $status;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tasks")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "tasks")]
+    #[ORM\JoinColumn(nullable: false)]
     private User $assignedUser;
 
     public function __construct(string $name, string $description, string $status, User $assignedUser)

@@ -2,8 +2,8 @@
 
 namespace App\Application;
 
-use App\Domain\Task;
-use App\Domain\User;
+use App\Domain\Task\Task;
+use App\Domain\User\User;
 use App\Infrastructure\TaskRepository;
 
 class TaskService
