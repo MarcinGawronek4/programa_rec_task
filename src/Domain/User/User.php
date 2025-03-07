@@ -8,10 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Infrastructure\UserRepository;
 use App\Domain\Task\Task;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -57,7 +58,7 @@ class User implements UserInterface
     public function getRoles(): array { return ['ROLE_USER']; }
     public function getSalt() {}
     public function eraseCredentials(): void {}
-    public function getUserIdentifier(): string { return $this->id; }
+    public function getUserIdentifier(): string { return $this->username; }
 
     public function getTasks(): Collection
     {

@@ -29,6 +29,6 @@ services:
             $entityManager: '@doctrine.orm.entity_manager'
             $httpClient: '@http_client'
             
-    App\Infrastructure\TaskRepository:
+    App\Infrastructure\Task\TaskRepository:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'

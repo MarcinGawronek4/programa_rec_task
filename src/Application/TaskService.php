@@ -3,8 +3,7 @@
 namespace App\Application;
 
 use App\Domain\Task\Task;
-use App\Domain\User\User;
-use App\Infrastructure\TaskRepository;
+use App\Infrastructure\Task\TaskRepository;
 
 class TaskService
 {
@@ -15,14 +14,19 @@ class TaskService
         $this->taskRepository = $taskRepository;
     }
 
-    public function getTasksForUser(User $user): array
+    public function getAllTasks(): array
     {
-        return $this->taskRepository->findByUser($user);
+        return $this->taskRepository->findAll();
     }
 
-    public function createTask(string $name, string $description, string $status, User $assignedUser): void
+    public function createTask(string $name, ?string $description, string $status): Task
     {
-        $task = new Task($name, $description, $status, $assignedUser);
+        $task = new Task();
+        $task->setName($name);
+        $task->setDescription($description);
+        $task->setStatus($status);
         $this->taskRepository->save($task);
+
+        return $task;
     }
 }

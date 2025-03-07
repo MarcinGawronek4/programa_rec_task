@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Task List{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center">Task List</h2>
+
+    <!-- Task List -->
+    <ul class="list-group">
+        {% for task in tasks %}
+            <li class="list-group-item">
+                <strong>{{ task.name }}</strong> - {{ task.description }} <span class="badge bg-secondary">{{ task.status }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Task Button -->
+    <button class="btn btn-primary mt-3" id="addTaskBtn">+ Add Task</button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="taskName" class="form-control" placeholder="Task Name">
+                <textarea id="taskDescription" class="form-control mt-2" placeholder="Description"></textarea>
+                <select id="status" class="form-select" placeholder="Status">
+                    <option value="to_do" selected>To Do</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="done">Done</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTaskBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const saveTaskBtn = document.getElementById('saveTaskBtn');
+    const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+
+    if (addTaskBtn) {
+        addTaskBtn.addEventListener('click', function() {
+            taskModal.show();
+        });
+    }
+
+    if (saveTaskBtn) {
+        saveTaskBtn.addEventListener('click', function() {
+            const name = document.getElementById('taskName').value;
+            const description = document.getElementById('taskDescription').value;
+            const status = document.getElementById('status').value;
+
+            fetch('{{ path('task_create') }}', {
+                method: 'POST',
+                body: JSON.stringify({ name, description, status }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); // Show error message if API response contains an error
+                } else {
+                    location.reload(); // Reload to show the new task
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
