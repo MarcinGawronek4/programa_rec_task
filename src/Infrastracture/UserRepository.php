@@ -48,8 +48,8 @@ class UserRepository implements UserRepositoryInterface
         $this->entityManager->flush();
     }
 
-    public function findByEmail(string $email): ?User
+    public function findByUsername(string $username): ?User
     {
-        return $this->repository->findOneBy(['email' => $email]);
+        return $this->repository->findOneBy(['username' => $username]);
     }
 }

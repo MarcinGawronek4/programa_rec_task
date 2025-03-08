@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: "users")]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User 
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,8 +33,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: "assignedUser", targetEntity: Task::class, cascade: ["remove"])]
     private Collection $tasks;
-    
 
+    #[ORM\Column(type: "json")]
+    private array $roles = [];
+    
     public function __construct(string $name, string $email, string $username, string $password)
     {
         $this->name = $name;
@@ -55,7 +57,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
     }
 
-    public function getRoles(): array { return ['ROLE_USER']; }
+    public function getRoles(): array { return $this->roles ?: ['ROLE_USER']; }
+    public function setRoles(array $roles): self { $this->roles = $roles; return $this; }
     public function getSalt() {}
     public function eraseCredentials(): void {}
     public function getUserIdentifier(): string { return $this->username; }

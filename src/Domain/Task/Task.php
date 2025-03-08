@@ -23,7 +23,7 @@ class Task
     private string $status = 'to_do'; // Default status
 
     #[ORM\Column(type: "integer", length: 50)]
-    private string $assigned_user_id = '1'; // Default status
+    private int $assigned_user_id = 1; // Default status
 
     public function getId(): ?int { return $this->id; }
     public function getName(): string { return $this->name; }
@@ -33,4 +33,5 @@ class Task
     public function getStatus(): string { return $this->status; }
     public function setStatus(string $status): self { $this->status = $status; return $this; }
     public function setAssignedUserId(int $assigned_user_id): self { $this->assigned_user_id = $assigned_user_id; return $this; }
+    public function getAssignedUserId(): int { return $this->assigned_user_id; }
 }
