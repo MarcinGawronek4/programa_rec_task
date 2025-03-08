@@ -3,6 +3,7 @@
 namespace App\Domain\Task;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Domain\User\User;
 
 #[ORM\Entity]
 #[ORM\Table(name: "tasks")]
@@ -20,10 +21,11 @@ class Task
     private ?string $description = null;
 
     #[ORM\Column(type: "string", length: 50)]
-    private string $status = 'to_do'; // Default status
+    private string $status = 'to_do'; 
 
-    #[ORM\Column(type: "integer", length: 50)]
-    private int $assigned_user_id = 1; // Default status
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $assignedUser; 
 
     public function getId(): ?int { return $this->id; }
     public function getName(): string { return $this->name; }
@@ -32,6 +34,6 @@ class Task
     public function setDescription(?string $description): self { $this->description = $description; return $this; }
     public function getStatus(): string { return $this->status; }
     public function setStatus(string $status): self { $this->status = $status; return $this; }
-    public function setAssignedUserId(int $assigned_user_id): self { $this->assigned_user_id = $assigned_user_id; return $this; }
-    public function getAssignedUserId(): int { return $this->assigned_user_id; }
+    public function getAssignedUser(): User { return $this->assignedUser; }
+    public function setAssignedUser(User $user): self { $this->assignedUser = $user; return $this; }
 }

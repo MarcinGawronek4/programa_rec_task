@@ -48,8 +48,18 @@ class UserRepository implements UserRepositoryInterface
         $this->entityManager->flush();
     }
 
+    public function findById(int $id): ?User
+    {
+        return $this->repository->findOneBy(['id' => $id]);
+    }
+
     public function findByUsername(string $username): ?User
     {
         return $this->repository->findOneBy(['username' => $username]);
+    }
+
+    public function findAll(): array
+    {
+        return $this->repository->findBy([], ['id' => 'DESC']); // Get tasks sorted by newest
     }
 }

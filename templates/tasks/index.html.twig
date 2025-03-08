@@ -6,20 +6,23 @@
 <div class="container mt-5">
     <h2 class="text-center">Task List</h2>
 
-    <!-- Task List -->
     <ul class="list-group">
         {% for task in tasks %}
-            <li class="list-group-item">
-                <strong>{{ task.name }}</strong> - {{ task.description }} <span class="badge bg-secondary">{{ task.status }}</span>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ task.name }}</strong><br>
+                    {{ task.description }}<br>
+                    <span class="badge bg-secondary">Status: <span id="task-status-{{ task.id }}">{{ task.status }}</span></span>
+                </div>
+                <button class="btn btn-sm btn-warning edit-task-btn" data-task-id="{{ task.id }}" data-task-name="{{ task.name }}" data-task-status="{{ task.status }}">
+                    Edit
+                </button>
             </li>
         {% endfor %}
     </ul>
-
-    <!-- Add Task Button -->
     <button class="btn btn-primary mt-3" id="addTaskBtn">+ Add Task</button>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="taskModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -44,18 +47,44 @@
     </div>
 </div>
 
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Task Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="modalTaskName" class="form-control" readonly>
+                <select id="modalTaskStatus" class="form-select mt-3">
+                    <option value="to_do">To Do</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="done">Done</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTaskStatusBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    const editButtons = document.querySelectorAll(".edit-task-btn");
+    const editTaskModal = new bootstrap.Modal(document.getElementById("editTaskModal"));
     const addTaskBtn = document.getElementById('addTaskBtn');
     const saveTaskBtn = document.getElementById('saveTaskBtn');
-    const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+    const createTaskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+    let selectedTaskId = null;
 
     if (addTaskBtn) {
         addTaskBtn.addEventListener('click', function() {
-            taskModal.show();
+            createTaskModal.show();
         });
     }
 
@@ -73,13 +102,44 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert(data.error); // Show error message if API response contains an error
+                    alert(data.error); 
                 } else {
-                    location.reload(); // Reload to show the new task
+                    location.reload(); 
                 }
             });
         });
     }
+
+    editButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            selectedTaskId = this.dataset.taskId;
+            document.getElementById("modalTaskName").value = this.dataset.taskName;
+            document.getElementById("modalTaskStatus").value = this.dataset.taskStatus;
+            editTaskModal.show();
+        });
+    });
+
+    document.getElementById("saveTaskStatusBtn").addEventListener("click", function() {
+        if (!selectedTaskId) return;
+
+        const newStatus = document.getElementById("modalTaskStatus").value;
+
+        fetch(`/tasks/update-status/${selectedTaskId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert("Error: " + data.error);
+            } else {
+                document.getElementById(`task-status-${selectedTaskId}`).innerText = data.status;
+                editTaskModal.hide();
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
 });
 </script>
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Infrastructure\Task;
 use App\Domain\Task\Task;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use App\Domain\User\User;
 
 class TaskRepository
 {
@@ -17,9 +18,13 @@ class TaskRepository
         $this->repository = $entityManager->getRepository(Task::class);
     }
 
-    public function findAll(): array
+    public function findAll(User $user): array
     {
-        return $this->repository->findBy([], ['id' => 'DESC']); // Get tasks sorted by newest
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->repository->findBy([], ['id' => 'DESC']);
+        }
+
+        return $this->repository->findBy(['assignedUser' => $user], ['id' => 'DESC']);
     }
 
     public function save(Task $task): void
