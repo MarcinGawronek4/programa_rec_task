@@ -21,6 +21,10 @@ class TaskController extends AbstractController
     #[Route('/tasks', name: 'task_list', methods: ['GET'])]
     public function taskList(): Response
     {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+        
         $tasks = $this->taskService->getAllTasks();
 
         return $this->render('tasks/index.html.twig', [
