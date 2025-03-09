@@ -11,20 +11,25 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Domain\Task\Task;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Domain\UserRepositoryInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\Domain\Task\Event\TaskUpdatedEvent;
 
 class TaskController extends AbstractController
 {
     private TaskService $taskService;
     private EntityManagerInterface $entityManager;
     private UserRepositoryInterface $userRepository;
+    private MessageBusInterface $eventBus;
 
-    public function __construct(TaskService $taskService, EntityManagerInterface $entityManager, UserRepositoryInterface $userRepository)
+    public function __construct(TaskService $taskService, EntityManagerInterface $entityManager, UserRepositoryInterface $userRepository, MessageBusInterface $eventBus)
     {
         $this->taskService = $taskService;
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+        $this->eventBus = $eventBus;
     }
 
+    #[Route('/tasks', name: 'task_list', methods: ['GET', 'POST'])]
     public function taskList(): Response
     {
         if (!$this->getUser()) {
@@ -66,9 +71,19 @@ class TaskController extends AbstractController
             return new JsonResponse(['error' => 'Status is required'], 400);
         }
 
-        $task->setStatus($data['status']);
-        $this->entityManager->flush();
+        $oldStatus = $task->getStatus();
+        $newStatus = $data['status'];
+
+      
+        if ($oldStatus !== $newStatus) {
+            $task->setStatus($newStatus);
+            $this->entityManager->flush();
+
+
+            $this->eventBus->dispatch(new TaskUpdatedEvent($task->getId(), $oldStatus, $newStatus));
+        }
 
         return new JsonResponse(['message' => 'Task status updated', 'status' => $task->getStatus()]);
     }
+
 }

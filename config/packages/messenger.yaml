@@ -1,11 +1,12 @@
-# framework:
-#     messenger:
-#         default_bus: command.bus
-#         buses:
-#             event.bus: ~  
-#             command.bus: ~
-#         transports:
-#             async: 
-#                 dsn: 'doctrine://default' 
-#         routing:
-#             App\Domain\Task\Event\TaskCreatedEvent: async 
+framework:
+    messenger:
+        default_bus: command.bus
+        buses:
+            event.bus: ~  
+            command.bus: ~
+        transports:
+            async: 
+                dsn: 'doctrine://default' 
+        routing:
+            App\Domain\Task\Event\TaskCreatedEvent: async 
+            App\Domain\Task\Event\TaskUpdatedEvent: async
