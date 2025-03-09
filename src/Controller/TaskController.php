@@ -59,7 +59,7 @@ class TaskController extends AbstractController
         return new JsonResponse(['message' => 'Task created successfully', 'task' => $task], 201);
     }
 
-    #[Route('/tasks/update-status/{id}', name: 'task_update_status', methods: ['POST'])]
+    #[Route('/tasks/update/{id}', name: 'task_update', methods: ['POST'])]
     public function updateTaskStatus(Request $request, Task $task): JsonResponse
     {
         if (!$this->getUser()) {
