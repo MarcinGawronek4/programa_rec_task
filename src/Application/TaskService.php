@@ -3,6 +3,7 @@
 namespace App\Application;
 
 use App\Domain\Task\Event\TaskCreatedEvent;
+use App\Domain\Task\TaskFactory;
 use App\Domain\Task\Task;
 use App\Infrastructure\Task\TaskRepository;
 use App\Infrastructure\UserRepository;
@@ -14,17 +15,22 @@ class TaskService
 {
     private TaskRepository $taskRepository;
     private UserRepository $userRepository;
+    private TaskFactory $taskFactory;
     private Security $security;
     private MessageBusInterface $eventBus;
 
     public function __construct(
         TaskRepository $taskRepository, 
         UserRepository $userRepository, 
+        TaskFactory $taskFactory, 
         Security $security,
+        MessageBusInterface $eventBus
     ) {
         $this->taskRepository = $taskRepository;
         $this->userRepository = $userRepository;
+        $this->taskFactory = $taskFactory;
         $this->security = $security;
+        $this->eventBus = $eventBus;
     }
 
 
@@ -33,29 +39,30 @@ class TaskService
         return $this->taskRepository->findAll($user);
     }
 
-    public function createTask(string $name, ?string $description, string $status, ?int $assignedUserId = null): Task
+    public function createTask(string $name, ?string $description, ?int $assignedUserId = null): Task
     {
         $currentUser = $this->security->getUser();
-
         if (!$currentUser) {
             throw new \Exception("No authenticated user found.");
         }
 
-        $task = new Task();
-        $task->setName($name);
-        $task->setDescription($description);
-        $task->setStatus($status);
-        if (in_array('ROLE_ADMIN', $currentUser->getRoles()) && $assignedUserId) {
-            $assignedUser = $this->userRepository->findById($assignedUserId);
-            if (!$assignedUser) {
-                throw new \Exception("User not found.");
-            }
-            $task->setAssignedUser($assignedUser);
-        } else {
-            $task->setAssignedUser($currentUser);
+        $assignmentContext = new AssignmentContext($currentUser, $this->userRepository);
+        $assignedUser = $assignmentContext->getAssignedUser($currentUser, $assignedUserId);
+
+        if (!$assignedUser) {
+            throw new \Exception("User not found.");
         }
+
+        $task = $this->taskFactory->create($name, $description, $assignedUser);
         $this->taskRepository->save($task);
-        $this->eventBus->dispatch(new TaskCreatedEvent($task->getId(), $task->getName(), $task->getDescription(), $task->getStatus(), $assignedUserId));
+
+        $this->eventBus->dispatch(new TaskCreatedEvent(
+            $task->getId(), 
+            $task->getName(), 
+            $task->getDescription(),
+            $task->getStatus(),
+            $task->getAssignedUser()->getId()
+        ));
 
         return $task;
     }

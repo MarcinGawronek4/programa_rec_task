@@ -32,3 +32,8 @@ services:
     App\Infrastructure\Task\TaskRepository:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+    
+    App\Domain\Task\TaskFactory: ~
+    App\Domain\Task\Strategy\SelfAssignment: ~
+    App\Domain\Task\Strategy\AdminAssignment: ~
+    App\Application\AssignmentContext: ~
