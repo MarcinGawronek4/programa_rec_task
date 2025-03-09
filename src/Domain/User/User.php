@@ -36,20 +36,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: "json")]
     private array $roles = [];
-    
-    public function __construct(string $name, string $email, string $username, string $password)
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->username = $username;
-        $this->password = $password;
-        $this->tasks = new ArrayCollection();
-    }
 
     public function getId(): ?int { return $this->id; }
     public function getName(): string { return $this->name; }
     public function getEmail(): string { return $this->email; }
     public function getUsername(): string { return $this->username; }
+    public function setUsername(string $username): void { 
+        $this->username = $username; 
+    }
     public function getPassword(): string { return $this->password; }
 
     public function setPassword(string $password): void
