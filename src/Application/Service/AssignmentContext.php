@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Service;
 
 use App\Domain\Task\AssignmentInterface;
 use App\Domain\Task\Strategy\AdminAssignment;
 use App\Domain\Task\Strategy\SelfAssignment;
 use App\Domain\User\User;
-use App\Infrastructure\UserRepository;
+use App\Infrastructure\User\UserRepository;
 
 class AssignmentContext
 {

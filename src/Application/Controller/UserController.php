@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Application\Controller;
 
 use App\Domain\User\User;
-use App\Domain\UserRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

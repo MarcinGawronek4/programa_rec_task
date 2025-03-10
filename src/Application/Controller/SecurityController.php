@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Application\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +25,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/logout', name: 'app_logout', methods: ['GET'])]
+    #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
         throw new \Exception('This should never be reached!');

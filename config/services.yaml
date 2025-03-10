@@ -22,9 +22,9 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Domain\UserRepositoryInterface: '@App\Infrastructure\UserRepository'
+    App\Domain\User\UserRepositoryInterface: '@App\Infrastructure\User\UserRepository'
     
-    App\Infrastructure\UserRepository:
+    App\Infrastructure\User\UserRepository:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
             $httpClient: '@http_client'

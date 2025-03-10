@@ -26,6 +26,7 @@ security:
                 target: app_login
 
     access_control:
+        - { path: ^/api/users/fetch, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/tasks, roles: ROLE_USER }
         - { path: ^/, roles: ROLE_USER }  # Redirects non-logged users from base URL

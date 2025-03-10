@@ -1,23 +1,26 @@
 <?php
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\User;
 
 use App\Domain\User\User;
-use App\Domain\UserRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Domain\User\UserFactory;
 
 class UserRepository implements UserRepositoryInterface
 {
     private HttpClientInterface $httpClient;
     private EntityManagerInterface $entityManager;
     private EntityRepository $repository;
+    private UserFactory $userFactory;
 
-    public function __construct(EntityManagerInterface $entityManager, HttpClientInterface $httpClient)
+    public function __construct(EntityManagerInterface $entityManager, HttpClientInterface $httpClient, UserFactory $userFactory)
     {
         $this->httpClient = $httpClient;
         $this->entityManager = $entityManager;
+        $this->userFactory = $userFactory;
         $this->repository = $entityManager->getRepository(User::class);
     }
 
@@ -26,12 +29,7 @@ class UserRepository implements UserRepositoryInterface
         $response = $this->httpClient->request('GET', 'https://jsonplaceholder.typicode.com/users');
         $data = $response->toArray();
 
-        return array_map(fn($user) => new User(
-            $user['name'], 
-            $user['email'], 
-            $user['username'],
-            'test'
-        ), $data);
+        return array_map(fn($user) => $this->userFactory->create($user['username'], 'test', $user['name'], $user['email'], $user['username'] == 'Samantha' ? ['ROLE_USER', 'ROLE_ADMIN'] : ['ROLE_USER']), $data );
     }
 
     public function save(User $user): void

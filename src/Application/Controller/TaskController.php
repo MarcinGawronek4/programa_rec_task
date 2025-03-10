@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller;
+namespace App\Application\Controller;
 
-use App\Application\TaskService;
+use App\Application\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Domain\Task\Task;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Domain\UserRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Domain\Task\Event\TaskUpdatedEvent;
 
@@ -54,36 +54,42 @@ class TaskController extends AbstractController
             return new JsonResponse(['error' => 'Task name is required'], 400);
         }
 
-        $task = $this->taskService->createTask($data['name'], $data['description'] ?? null, $data['status'], $data['assignedUserId']);
+        $task = $this->taskService->createTask($data['name'], $data['description'] ?? null, $data['status'], !empty($data['user']) ? $data['user'] : null);
 
         return new JsonResponse(['message' => 'Task created successfully', 'task' => $task], 201);
     }
 
     #[Route('/tasks/update/{id}', name: 'task_update', methods: ['POST'])]
-    public function updateTaskStatus(Request $request, Task $task): JsonResponse
+    public function updateTask(Request $request, Task $task): JsonResponse
     {
         if (!$this->getUser()) {
             return new JsonResponse(['error' => 'Unauthorized'], 403);
         }
 
         $data = json_decode($request->getContent(), true);
-        if (!isset($data['status'])) {
-            return new JsonResponse(['error' => 'Status is required'], 400);
+
+        if (empty($data['name'])) {
+            return new JsonResponse(['error' => 'Task name is required'], 400);
         }
 
         $oldStatus = $task->getStatus();
         $newStatus = $data['status'];
 
       
+        $task->setName($data['name']);
+
+        if(!empty($data['user'])){
+            $task->setAssignedUser($this->userRepository->findById($data['user']));
+        }
+
         if ($oldStatus !== $newStatus) {
             $task->setStatus($newStatus);
-            $this->entityManager->flush();
-
-
             $this->eventBus->dispatch(new TaskUpdatedEvent($task->getId(), $oldStatus, $newStatus));
         }
 
-        return new JsonResponse(['message' => 'Task status updated', 'status' => $task->getStatus()]);
+        $this->entityManager->flush();
+
+        return new JsonResponse(['message' => 'Task updated', 'status' => $task->getStatus()]);
     }
 
 }

@@ -19,7 +19,7 @@ class TaskFactoryTest extends TestCase
     public function testFactoryCreatesValidTaskInstance(): void
     {
         $user = $this->createMock(User::class);
-        $task = $this->taskFactory->create("Test Task", "This is a test task", $user);
+        $task = $this->taskFactory->create("Test Task", "This is a test task", "to_do", $user);
 
         $this->assertInstanceOf(Task::class, $task, "TaskFactory should return an instance of Task");
     }
@@ -27,7 +27,7 @@ class TaskFactoryTest extends TestCase
     public function testFactorySetsCorrectNameAndDescription(): void
     {
         $user = $this->createMock(User::class);
-        $task = $this->taskFactory->create("Test Task", "This is a test task", $user);
+        $task = $this->taskFactory->create("Test Task", "This is a test task", "to_do", $user);
 
         $this->assertEquals("Test Task", $task->getName(), "Task name should be set correctly");
         $this->assertEquals("This is a test task", $task->getDescription(), "Task description should be set correctly");
@@ -36,7 +36,7 @@ class TaskFactoryTest extends TestCase
     public function testFactoryAssignsUserCorrectly(): void
     {
         $user = $this->createMock(User::class);
-        $task = $this->taskFactory->create("Test Task", "This is a test task", $user);
+        $task = $this->taskFactory->create("Test Task", "This is a test task", "to_do", $user);
 
         $this->assertSame($user, $task->getAssignedUser(), "Task should be assigned to the correct user");
     }
@@ -44,7 +44,7 @@ class TaskFactoryTest extends TestCase
     public function testFactorySetsDefaultStatus(): void
     {
         $user = $this->createMock(User::class);
-        $task = $this->taskFactory->create("Test Task", "This is a test task", $user);
+        $task = $this->taskFactory->create("Test Task", "This is a test task", "to_do", $user);
 
         $this->assertEquals("to_do", $task->getStatus(), "Newly created tasks should have 'to_do' status by default");
     }
@@ -52,7 +52,7 @@ class TaskFactoryTest extends TestCase
     public function testFactoryHandlesNullDescription(): void
     {
         $user = $this->createMock(User::class);
-        $task = $this->taskFactory->create("Test Task", null, $user);
+        $task = $this->taskFactory->create("Test Task", null, "to_do", $user);
 
         $this->assertNull($task->getDescription(), "Task description should be null if not provided");
     }
@@ -61,6 +61,6 @@ class TaskFactoryTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        $this->taskFactory->create("Test Task", "This should fail", null);
+        $this->taskFactory->create("Test Task", "This should fail", "to_do", null);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Domain\Task\Strategy;
 
 use App\Domain\Task\AssignmentInterface;
 use App\Domain\User\User;
-use App\Infrastructure\UserRepository;
+use App\Infrastructure\User\UserRepository;
 
 class AdminAssignment implements AssignmentInterface
 {

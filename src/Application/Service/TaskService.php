@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Service;
 
 use App\Domain\Task\Event\TaskCreatedEvent;
 use App\Domain\Task\TaskFactory;
 use App\Domain\Task\Task;
 use App\Infrastructure\Task\TaskRepository;
-use App\Infrastructure\UserRepository;
+use App\Infrastructure\User\UserRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Domain\User\User;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -39,7 +39,7 @@ class TaskService
         return $this->taskRepository->findAll($user);
     }
 
-    public function createTask(string $name, ?string $description, ?int $assignedUserId = null): Task
+    public function createTask(string $name, ?string $description, $status, ?int $assignedUserId = null): Task
     {
         $currentUser = $this->security->getUser();
         if (!$currentUser) {
@@ -53,7 +53,7 @@ class TaskService
             throw new \Exception("User not found.");
         }
 
-        $task = $this->taskFactory->create($name, $description, $assignedUser);
+        $task = $this->taskFactory->create($name, $description, $status, $assignedUser);
         $this->taskRepository->save($task);
 
         $this->eventBus->dispatch(new TaskCreatedEvent(

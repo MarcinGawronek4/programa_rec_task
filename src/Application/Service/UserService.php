@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Application;
+namespace App\Application\Service;
 
-use App\Domain\User;
-use App\Domain\UserRepositoryInterface;
+use App\Domain\User\UserRepositoryInterface;
 
 class UserService
 {
